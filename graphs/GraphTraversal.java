@@ -13,7 +13,7 @@ protected Graph g;
   public Progress [] progress;
   public int [] parent;
 
-  public void init(Graph g){
+  public GraphTraversal init(Graph g){
     this.g=g;
 
     progress = new Progress[g.vertices];
@@ -22,6 +22,7 @@ protected Graph g;
     }
 
     parent = new int[g.vertices];
+    return this;
   }
 
   abstract public void execute(int s);

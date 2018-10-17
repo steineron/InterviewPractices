@@ -11,6 +11,11 @@ public final class Graphs{
     WHITE
   }
 
+
+
+/**
+return the number of connected components ion the Graph
+*/
   public static int connectedComponents(Graph g){
     int c=0;
     BFS bfs = new BFS();
@@ -19,48 +24,87 @@ public final class Graphs{
     for (int v=0; v < g.vertices; v++){
       if(!bfs.visited(v)){
         c++;
-        bfs.excute(v);
+        bfs.execute(v);
       }
     }
     return c;
   }
 
+
+/**
+  return true/false if the graph is bipartite and fill the coloring array
+*/
   public static boolean bipartite(Graph g, final VertexColour[] coloring){
 
-    boolean isBipartite = true;
-    BFS bfs = new BFS(){
-
-      @Override
-      public void init(Graph g){
-        super.init(g);
-        for(int v=0; v<g.vertices; v++){
-          coloring[v] = UNCOLOURED;
-        }
-      }
-
-      @Override
-      public void processEdge(int u, int v, double weight){
-        if(coloring[u]==coloring[v]){
-          isBipartite = false;
-        }
-      }
-
-      @Override
-      public void processVertexLate(int v){
-        if(coloring[v]==UNCOLOURED){
-          coloring[v] = coloring[parent[v]]==BLACK ? WHITE : BLACK;
-        }
-      }
-    };
-
+    BipartiteFinder bfs = new BipartiteFinder(coloring);
     bfs.init(g);
 
     for(int v=0; v<g.vertices; v++){
       if(!bfs.visited(v)){
-        coloring[v] = BLACK;
-        bfs.excute(v);
+        coloring[v] = VertexColour.BLACK;
+        bfs.execute(v);
       }
     }
-    return isBipartite;
+    return bfs.isBipartite;
   }
+
+
+  /**
+  find circles in the graphs
+  */
+
+  public boolean findCircle(Graph g){
+    CircleFinder dfs = new CircleFinder();
+    dfs.init(g);
+
+    for (int v=0; v<g.vertices; v++){
+      if(!dfs.visited(v) && !dfs.hasCircle){
+        dfs.execute(v);
+      }
+    }
+    return dfs.hasCircle;
+  }
+
+
+
+  private static class BipartiteFinder extends BFS{
+    boolean isBipartite = true;
+
+    final VertexColour[] coloring;
+    
+    BipartiteFinder(final VertexColour[] coloring){
+      this.coloring=coloring;
+    }
+
+
+    @Override
+    public BFS init(Graph g){
+      super.init(g);
+      for(int v=0; v<g.vertices; v++){
+        coloring[v] = VertexColour.UNCOLOURED;
+      }
+      return this;
+    }
+
+    @Override
+    public void processEdge(int u, int v, double weight){
+      if(coloring[u]==coloring[v]){
+        isBipartite = false;
+      }
+      coloring[v] = coloring[u]== VertexColour.BLACK ? VertexColour.WHITE : VertexColour.BLACK;
+    }
+  }
+
+  private static class CircleFinder extends DFS{
+    boolean hasCircle = false;
+
+    @Override
+    public void processEdge(int u, int v, double weight){
+      if(parent[u]!=v){
+        execute=false;
+        hasCircle=true;
+      }
+    }
+  }
+
 }
