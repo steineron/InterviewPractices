@@ -2,27 +2,18 @@ package graphs;
 
 import graphs.Graph.EdgeNode;
 import java.util.LinkedList;
+import static graphs.GraphTraversal.Progress;
+
 
 public class BFS extends GraphTraversal{
 
-
-  private static final int UNDISCOVERED = 0;
-  private static final int DISCOVERED = 1;
-  private static final int PROCESSED = 2;
-
-
-  public int [] progress;
-  public int [] parent;
-
-
   @Override
-  final public void execute(Graph g, int s){
+  final public void execute(int s){
 
-    progress = new int[g.vertices];
     LinkedList<Integer> q = new LinkedList<>();
 
     q.add(s);
-    progress[s] = DISCOVERED;
+    progress[s] = Progress.DISCOVERED;
 
     while(!q.isEmpty()){
         int u = q.remove(0);
@@ -32,19 +23,19 @@ public class BFS extends GraphTraversal{
 
           processVertexEarly(v);
 
-          if(progress[v] != PROCESSED || g.isDirected){
+          if(progress[v] != Progress.PROCESSED || g.isDirected){
             processEdge(u,v);
           }
 
-          if(progress[v]==UNDISCOVERED){
-            progress[v] = DISCOVERED;
+          if(progress[v] == Progress.UNDISCOVERED){
+            progress[v] = Progress.DISCOVERED;
             q.add(v);
             parent[v]=u;
             processVertexLate(v);
           }
 
         }
-        progress[u] = PROCESSED;
+        progress[u] = Progress.PROCESSED;
 
 
     }

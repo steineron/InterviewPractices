@@ -3,6 +3,8 @@ package graphs;
 
 import java.util.LinkedList;
 import java.util.List;
+import static graphs.GraphTraversal.Progress;
+
 
 public class Graph{
 
